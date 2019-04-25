@@ -34,6 +34,9 @@ static void TerminationHandler(int signalNumber)
 
 void DisplayReading(float reading, char* prefix, int sleep)
 {
+	setTextXY(0, 0);
+	putString("                       ");
+
 	char buf[50];
 
 	sprintf(buf, "%f", reading);
@@ -76,16 +79,12 @@ int main(int argc, char *argv[])
 	setNormalDisplay();
 	setVerticalMode();
 
-    // Main loop
-    const struct timespec sleepTime = {0, 10000};
+	DisplayReading(0, "ROTARY READY - ", 1);
 
     while (!terminationRequested) {
-
-		setTextXY(0, 0);  //set Cursor to ith line, 0th column
-		setGrayLevel(5); //Set Grayscale level. Any number between 0 - 15.
-
 		float occupy = 1.0f - GroveRotaryAngleSensor_Read(rotarysensor);
-		DisplayReading(occupy, "angle: ", 10000);
+
+		DisplayReading(occupy, "angle: ", 100);
         Log_Debug("Angle Value %.2f\n", occupy);
     }
 

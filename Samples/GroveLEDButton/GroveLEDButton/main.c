@@ -13,6 +13,9 @@
 #include "Grove.h"
 #include "Sensors/GroveLEDButton.h"
 
+#include "Sensors/GroveOledDisplay96x96.h"
+
+
 // This C application for the MT3620 Reference Development Board (Azure Sphere)
 // outputs a string every second to Visual Studio's Device Output window
 //
@@ -30,6 +33,15 @@ static void TerminationHandler(int signalNumber)
     terminationRequested = true;
 }
 
+void DisplayReading(char* text, int sleep)
+{
+	setTextXY(0, 0);
+	putString("                       ");
+	setTextXY(0, 0);
+	putString(text);
+	usleep(sleep);
+}
+
 /// <summary>
 ///     Main entry point for this sample.
 /// </summary>
@@ -44,11 +56,25 @@ int main(int argc, char *argv[])
     action.sa_handler = TerminationHandler;
     sigaction(SIGTERM, &action, NULL);
 
+	// Initialize Grove Shield
+	int i2cFd;
+	GroveShield_Initialize(&i2cFd, 9600);
+
+	// INIT OLED	
+	GroveOledDisplay_Init(i2cFd, SH1107G);
+
 	void *btn = GroveLEDButton_Init(1, 0);
 	last_btn_sta = GroveLEDButton_GetBtnState(btn);
 
+	// Word display
+	clearDisplay();
+	setNormalDisplay();
+	setVerticalMode();
+
     // Main loop
     const struct timespec sleepTime = {0, 1000};
+
+	DisplayReading("BUTTON READY", 1);
     while (!terminationRequested) {
 
 		btn_sta = GroveLEDButton_GetBtnState(btn);
@@ -57,10 +83,12 @@ int main(int argc, char *argv[])
 			if (btn_sta == 0) {
 				GroveLEDButton_LedOn(btn);
 				Log_Debug("Button pressed.\n");
+				DisplayReading("pressed ", 100);
 			}
 			else {
 				GroveLEDButton_LedOff(btn);
 				Log_Debug("Button released.\n");
+				DisplayReading("released ", 100);
 			}
 		}
 		last_btn_sta = btn_sta;

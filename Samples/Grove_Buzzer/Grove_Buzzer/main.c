@@ -12,6 +12,8 @@
 
 #include "Grove.h"
 #include "Sensors/GroveRelay.h"
+#include "Sensors/GroveOledDisplay96x96.h"
+#include <stdio.h>
 
 // This C application for the MT3620 Reference Development Board (Azure Sphere)
 // outputs a string every second to Visual Studio's Device Output window
@@ -30,6 +32,14 @@ static void TerminationHandler(int signalNumber)
     terminationRequested = true;
 }
 
+void DisplayReading(char* prefix, int sleep)
+{
+	putString(prefix);
+
+	usleep(sleep);
+}
+
+
 /// <summary>
 ///     Main entry point for this sample.
 /// </summary>
@@ -45,20 +55,28 @@ int main(int argc, char *argv[])
     action.sa_handler = TerminationHandler;
     sigaction(SIGTERM, &action, NULL);
 
-    void *relay = GroveRelay_Open(0);
+    void *relaysensor = GroveRelay_Open(0);
+
+	clearDisplay();
+	setNormalDisplay();
+	setVerticalMode();
 
     // Main loop
     const struct timespec sleepTime = {2, 0};
-    while (!terminationRequested) {       
+    while (!terminationRequested) {   
+    	
         if(state) {
-            GroveRelay_On(relay);
+            GroveRelay_On(relaysensor);
+			DisplayReading("Relay on\n", 100000);
 			Log_Debug("Relay on\n");
             
         } else {
-            GroveRelay_Off(relay);
+            GroveRelay_Off(relaysensor);
+			DisplayReading("Relay off\n", 100000);
 			Log_Debug("Relay off\n");
-        }        
-        state = !state;
+        }
+
+		state = !state;
         
         nanosleep(&sleepTime, NULL);
     }
