@@ -36,7 +36,7 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <IncludePath>C:\Work\Xamariners\OpenSource\Meetup\AzureSphere\Samples\MT3620_Grove_Shield_Library;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Work\Xamariners\OpenSource\Meetup\AzureSphere\Samples\MT3620_Grove_Shield_Library;C:\Work\Xamariners\Meetup\azsphere\AzSphereGrove\MT3620_Grove_Shield_Library;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="main.c" />
