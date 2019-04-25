@@ -10,8 +10,6 @@
 #include "Grove.h"
 #include "Sensors/GroveOledDisplay96x96.h"
 #include <Sensors/GroveTempHumiSHT31.h>
-#include "Sensors/GroveLightSensor.h"
-#include "Sensors/GroveAD7992.h"
 #include "HAL/GroveI2C.h"
 #include <stdio.h>
 
@@ -205,9 +203,6 @@ int main(int argc, char *argv[])
 	//// INIT TEMP
 	void* tempsensor = GroveTempHumiSHT31_Open(i2cFd);	
 
-	// Initialize Light Sensor
-	/*void *lightsensor = GroveLightSensor_Init(i2cFd, 0);*/
-
     while (!terminationRequested) {
         Log_Debug("Temp Reader\n");
 
@@ -225,7 +220,6 @@ int main(int argc, char *argv[])
 			setTextXY(i, 0);  //set Cursor to ith line, 0th column
 			setGrayLevel(i); //Set Grayscale level. Any number between 0 - 15.
 
-
 			// Read temp from sensors
 			GroveTempHumiSHT31_Read(tempsensor);
 			float temp = GroveTempHumiSHT31_GetTemperature(tempsensor);
@@ -235,12 +229,6 @@ int main(int argc, char *argv[])
 				DisplayReading(temp, "temp:", 100000);
 			else
 				DisplayReading(humi, "humi:", 100000);
-
-
-			// Readlight from sensors
-			/*float light = GroveLightSensor_Read(lightsensor);
-			light = GroveAD7992_ConvertToMillisVolt(light);
-			DisplayReading(light, "Light value:", 100000);*/
 		}
 
 		usleep(2000000);

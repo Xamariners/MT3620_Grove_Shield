@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 	GroveOledDisplay_Init(i2cFd, SH1107G);
 
 	// Initialize Light Sensor
-	/*void *light = GroveLightSensor_Init(i2cFd, 0);*/
+	void *lightsenspr = GroveLightSensor_Init(i2cFd, 0);
 
 	// Word display
 	clearDisplay();
@@ -76,14 +76,22 @@ int main(int argc, char *argv[])
 	setVerticalMode();
 
     // Main loop
+
+	uint8_t i = 0;
     const struct timespec sleepTime = {1, 0};
     while (!terminationRequested) {
-		/*float value = GroveLightSensor_Read(light);
-		value = GroveAD7992_ConvertToMillisVolt(value);*/
-		DisplayReading(12.2, "Light value:", 100000);
-        //Log_Debug("Light value %dmV\n", (uint16_t)value);
+		setTextXY(i, 0);  //set Cursor to ith line, 0th column
+		setGrayLevel(i); //Set Grayscale level. Any number between 0 - 15.
+
+
+		float value = GroveLightSensor_Read(lightsenspr);
+		value = GroveAD7992_ConvertToMillisVolt(value);
+		DisplayReading((uint16_t)value, "Light value:", 100000);
+        Log_Debug("Light value %dmV\n", (uint16_t)value);
 
         nanosleep(&sleepTime, NULL);
+
+		i++;
     }
 
     Log_Debug("Application exiting\n");
