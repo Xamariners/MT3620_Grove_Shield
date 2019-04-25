@@ -186,7 +186,6 @@ int main(int argc, char *argv[])
 {
     Log_Debug("Application starting\n");
 
-
     // Register a SIGTERM handler for termination requests
     struct sigaction action;
     memset(&action, 0, sizeof(struct sigaction));

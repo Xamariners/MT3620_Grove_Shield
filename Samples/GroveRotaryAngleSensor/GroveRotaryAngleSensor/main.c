@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <stdio.h>
 
 // applibs_versions.h defines the API struct versions to use for applibs APIs.
 #include "applibs_versions.h"
@@ -12,6 +13,7 @@
 
 #include "Grove.h"
 #include "Sensors/GroveRotaryAngleSensor.h"
+#include "Sensors/GroveOledDisplay96x96.h"
 
 // This C application for the MT3620 Reference Development Board (Azure Sphere)
 // outputs a string every second to Visual Studio's Device Output window
@@ -30,6 +32,22 @@ static void TerminationHandler(int signalNumber)
     terminationRequested = true;
 }
 
+void DisplayReading(float reading, char* prefix, int sleep)
+{
+	char buf[50];
+
+	sprintf(buf, "%f", reading);
+
+	char result[100];
+	strcpy(result, prefix);
+	strcat(result, buf);
+
+	putString(result);
+
+	usleep(sleep);
+}
+
+
 /// <summary>
 ///     Main entry point for this sample.
 /// </summary>
@@ -47,16 +65,28 @@ int main(int argc, char *argv[])
 	int i2cFd;
 	GroveShield_Initialize(&i2cFd, 9600);
 
-	void* rotary = GroveRotaryAngleSensor_Init(i2cFd, 0);
-	
+	// INIT OLED	
+	GroveOledDisplay_Init(i2cFd, SH1107G);
+
+	// INIT ROTARY
+	void* rotarysensor = GroveRotaryAngleSensor_Init(i2cFd, 0);
+
+	// Word display
+	clearDisplay();
+	setNormalDisplay();
+	setVerticalMode();
 
     // Main loop
-    const struct timespec sleepTime = {1, 0};
-    while (!terminationRequested) {
-		float occupy = 1.0f - GroveRotaryAngleSensor_Read(rotary);
-        Log_Debug("Angle Value %.2f\n", occupy);
+    const struct timespec sleepTime = {0, 10000};
 
-        nanosleep(&sleepTime, NULL);
+    while (!terminationRequested) {
+
+		setTextXY(0, 0);  //set Cursor to ith line, 0th column
+		setGrayLevel(5); //Set Grayscale level. Any number between 0 - 15.
+
+		float occupy = 1.0f - GroveRotaryAngleSensor_Read(rotarysensor);
+		DisplayReading(occupy, "angle: ", 10000);
+        Log_Debug("Angle Value %.2f\n", occupy);
     }
 
     Log_Debug("Application exiting\n");
